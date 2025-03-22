@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/main/xiaozhi-server"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AdminApplication<xiaozhi-esp32-api>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "xiaozhi.AdminApplication",
+            "projectName": "xiaozhi-esp32-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
