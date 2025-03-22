@@ -18,6 +18,10 @@ docker镜像已支持x86架构、arm64架构的CPU，支持在国产操作系统
 curl -L -o docker-setup.sh https://raw.githubusercontent.com/xinnan-tech/xiaozhi-esp32-server/main/docker-setup.sh
 ```
 
+FunASR 热词版使用 SeACoParaformer 代替 SenseVoiceSmall，先执行以下命令开启（可选）
+```bash
+export HOTWORD_ENABLED=true
+```
 如果您的电脑是windows系统，请使用使用 Git Bash、WSL、PowerShell 或 CMD 运行以下命令：
 ```bash
 # Git Bash 或 WSL
@@ -50,7 +54,7 @@ chmod +x docker-setup.sh
 
 安装完后，你需要为这个项目找一个安放配置文件的目录，例如我们可以新建一个文件夹叫`xiaozhi-server`。
 
-创建好目录后，你需要在`xiaozhi-server`下面创建`data`文件夹和`models`文件夹，`models`下面还要再创建`SenseVoiceSmall`文件夹。
+创建好目录后，你需要在`xiaozhi-server`下面创建`data`文件夹和`models`文件夹，`models`下面还要再创建`SenseVoiceSmall`文件夹，热词版创建`SeACoParaformer`文件夹。
 
 最终目录结构如下所示：
 
@@ -58,6 +62,7 @@ chmod +x docker-setup.sh
 xiaozhi-server
   ├─ data
   ├─ models
+     ├─ SeACoParaformer
      ├─ SenseVoiceSmall
 ```
 
@@ -96,6 +101,8 @@ xiaozhi-server
   ├─ data
     ├─ .config.yaml
   ├─ models
+     ├─ SeACoParaformer
+       ├─ model.pt
      ├─ SenseVoiceSmall
        ├─ model.pt
 ```
@@ -114,6 +121,7 @@ xiaozhi-server
 打开命令行工具，使用`终端`或`命令行`工具 进入到你的`xiaozhi-server`，执行以下命令
 
 ```
+# 默认不使用热词，如果开启 FunASR 热词，自行修改 docker-compose.yml 文件，使用 SeACoParaformer !!!
 docker-compose up -d
 ```
 
@@ -306,6 +314,7 @@ LLM:
 - 线路二：百度网盘下载[SenseVoiceSmall](https://pan.baidu.com/share/init?surl=QlgM58FHhYv1tFnUT_A8Sg&pwd=qvna) 提取码:
   `qvna`
 
+热词版使用`SeACoParaformer`模型，下载后把`model.pt`文件放在`models/SeACoParaformer`目录下。阿里魔塔下载[SeACoParaformer](https://modelscope.cn/models/iic/speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/resolve/master/model.pt)
 ## 运行状态确认
 
 如果你能看到，类似以下日志,则是本项目服务启动成功的标志。

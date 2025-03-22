@@ -134,6 +134,8 @@ ASR:
     type: fun_local
     model_dir: models/SenseVoiceSmall
     output_dir: tmp/
+    hotword_enabled: true  # 开启热词，需要切换至支持热词的模型（例如：SeACoParaformer）
+    hotword_path: data/.hotword.txt
   SherpaASR:
     type: sherpa_onnx_local
     model_dir: models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17

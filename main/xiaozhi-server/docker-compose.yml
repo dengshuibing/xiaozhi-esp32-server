@@ -21,6 +21,8 @@ services:
       - ./data:/opt/xiaozhi-esp32-server/data
       # 模型文件挂接，很重要
       - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
+      # 热词版，使用以下模型文件
+      # - ./models/SeACoParaformer/model.pt:/opt/xiaozhi-esp32-server/models/SeACoParaformer/model.pt
 
 #  #智控台还没开发好，还不能完全使用，会报很多错误，如果是非技术人员，请不要启用智控台服务
 #  xiaozhi-esp32-server-web:

@@ -11,6 +11,7 @@ from core.providers.asr.base import ASRProviderBase
 
 from funasr import AutoModel
 from funasr.utils.postprocess_utils import rich_transcription_postprocess
+from core.utils.util import get_project_dir
 
 TAG = __name__
 logger = setup_logging()
@@ -37,10 +38,19 @@ class ASRProvider(ASRProviderBase):
     def __init__(self, config: dict, delete_audio_file: bool):
         self.model_dir = config.get("model_dir")
         self.output_dir = config.get("output_dir")  # 修正配置键名
+        self.hotword_path = config.get("hotword_path")
+        self.hotword_enabled = config.get("hotword_enabled")
         self.delete_audio_file = delete_audio_file
 
         # 确保输出目录存在
         os.makedirs(self.output_dir, exist_ok=True)
+
+        if self.hotword_enabled:
+            # 检查热词文件
+            if not os.path.exists(self.hotword_path):
+                with open(self.hotword_path, "w"):
+                    pass  # 创建一个空文件
+            
         with CaptureOutput():
             self.model = AutoModel(
                 model=self.model_dir,
@@ -84,13 +94,23 @@ class ASRProvider(ASRProviderBase):
 
             # 语音识别
             start_time = time.time()
-            result = self.model.generate(
-                input=file_path,
-                cache={},
-                language="auto",
-                use_itn=True,
-                batch_size_s=60,
-            )
+            if self.hotword_enabled:
+                result = self.model.generate(
+                    input=file_path,
+                    hotword=self.hotword_path,
+                    cache={},
+                    language="auto",
+                    use_itn=True,
+                    batch_size_s=60,
+                )
+            else:
+                result = self.model.generate(
+                    input=file_path,
+                    cache={},
+                    language="auto",
+                    use_itn=True,
+                    batch_size_s=60,
+                )
             text = rich_transcription_postprocess(result[0]["text"])
             logger.bind(tag=TAG).debug(f"语音识别耗时: {time.time() - start_time:.3f}s | 结果: {text}")
 

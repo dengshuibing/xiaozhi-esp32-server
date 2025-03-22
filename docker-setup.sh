@@ -26,9 +26,21 @@ fi
 
 echo "${GREEN}开始安装小智服务端...${NC}"
 
+#是否使用热词模型
+HOTWORD_ENABLED="${HOTWORD_ENABLED:-false}"
+
 # 创建必要的目录
 echo "创建目录结构..."
-mkdir -p xiaozhi-server/data xiaozhi-server/models/SenseVoiceSmall
+if [ "$HOTWORD_ENABLED" = false ]; then
+    mkdir -p xiaozhi-server/data xiaozhi-server/models/SenseVoiceSmall
+    MODEL_URL="https://modelscope.cn/models/iic/SenseVoiceSmall/resolve/master/model.pt"
+    MODEL_SAVE_PATH="models/SenseVoiceSmall/model.pt"
+else
+    mkdir -p xiaozhi-server/data xiaozhi-server/models/SeACoParaformer
+    MODEL_URL="https://modelscope.cn/models/iic/speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/resolve/master/model.pt"
+    MODEL_SAVE_PATH="models/SeACoParaformer/model.pt"
+
+fi
 cd xiaozhi-server || exit
 
 # 根据操作系统选择下载命令
@@ -52,16 +64,16 @@ fi
 # 下载语音识别模型
 echo "下载语音识别模型..."
 if [ "$DOWNLOAD_CMD" = "powershell -Command Invoke-WebRequest -Uri" ]; then
-    $DOWNLOAD_CMD "https://modelscope.cn/models/iic/SenseVoiceSmall/resolve/master/model.pt" $DOWNLOAD_CMD_SUFFIX "models/SenseVoiceSmall/model.pt"
+    $DOWNLOAD_CMD $MODEL_URL $DOWNLOAD_CMD_SUFFIX $MODEL_SAVE_PATH
 else
-    $DOWNLOAD_CMD "models/SenseVoiceSmall/model.pt" "https://modelscope.cn/models/iic/SenseVoiceSmall/resolve/master/model.pt"
+    $DOWNLOAD_CMD $MODEL_SAVE_PATH $MODEL_URL
 fi
 
 if [ $? -ne 0 ]; then
     echo "${RED}模型下载失败。请手动从以下地址下载：${NC}"
-    echo "1. https://modelscope.cn/models/iic/SenseVoiceSmall/resolve/master/model.pt"
+    echo "1. ${MODEL_URL}"
     echo "2. 百度网盘: https://pan.baidu.com/share/init?surl=QlgM58FHhYv1tFnUT_A8Sg (提取码: qvna)"
-    echo "下载后请将文件放置在 models/SenseVoiceSmall/model.pt"
+    echo "下载后请将文件放置在 ${MODEL_SAVE_PATH}"
 fi
 
 # 下载配置文件
@@ -76,7 +88,7 @@ fi
 
 # 检查文件是否存在
 echo "检查文件完整性..."
-FILES_TO_CHECK="docker-compose.yml data/.config.yaml models/SenseVoiceSmall/model.pt"
+FILES_TO_CHECK="docker-compose.yml data/.config.yaml ${MODEL_SAVE_PATH}"
 ALL_FILES_EXIST=true
 
 for FILE in $FILES_TO_CHECK; do
